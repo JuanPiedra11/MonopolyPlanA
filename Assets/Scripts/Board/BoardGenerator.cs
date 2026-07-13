@@ -30,27 +30,170 @@ namespace MonopolyPlanA
         readonly List<GameObject> _tileObjects = new List<GameObject>();
         Material _baseMat;
 
+        /// <summary>Color del grupo para la UI (chips de propiedades).</summary>
+        public static Color GetGroupColor(int group) =>
+            group >= 0 && group < GroupColors.Length ? GroupColors[group] : Color.gray;
+
+        // --- Mazos 3D de cartas sobre el tablero ---
+        public Vector3 ChanceDeckWorldPos { get; private set; }
+        public Vector3 CommunityDeckWorldPos { get; private set; }
+
+        void CreateDecks(float boardSize)
+        {
+            var chanceBack = Resources.Load<Texture2D>("Cards/Events/event_chance_back");
+            var communityBack = Resources.Load<Texture2D>("Cards/Events/event_community_back");
+            if (communityBack == null) communityBack = chanceBack;
+
+            // posiciones medidas de los rombos dibujados en el arte del tablero (u,v desde arriba-izquierda)
+            ChanceDeckWorldPos = CreateDeckStack(chanceBack, new Vector2(0.69f, 0.71f), boardSize, "ChanceDeck");
+            CommunityDeckWorldPos = CreateDeckStack(communityBack, new Vector2(0.28f, 0.27f), boardSize, "CommunityDeck");
+        }
+
+        Vector3 CreateDeckStack(Texture2D back, Vector2 uvTopLeft, float boardSize, string name)
+        {
+            float x = (uvTopLeft.x - 0.5f) * boardSize;
+            float z = (0.5f - uvTopLeft.y) * boardSize;
+
+            var parent = new GameObject(name);
+            parent.transform.SetParent(transform, false);
+            parent.transform.localPosition = new Vector3(x, 0f, z);
+            parent.transform.localRotation = Quaternion.Euler(0f, 45f, 0f); // rombos del arte
+
+            if (back != null)
+            {
+                var mat = new Material(Shader.Find("Unlit/Transparent"));
+                mat.mainTexture = back;
+
+                const float cw = 2.25f; // del tamaño del recuadro dibujado
+                float ch = cw * ((float)back.height / back.width);
+
+                for (int i = 0; i < 8; i++)
+                {
+                    var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                    q.name = $"Card_{i}";
+                    Destroy(q.GetComponent<Collider>());
+                    q.transform.SetParent(parent.transform, false);
+                    q.transform.localPosition = new Vector3(
+                        Random.Range(-0.02f, 0.02f), 0.05f + i * 0.012f, Random.Range(-0.02f, 0.02f));
+                    q.transform.localRotation = Quaternion.Euler(90f, 0f, Random.Range(-3.5f, 3.5f));
+                    q.transform.localScale = new Vector3(cw, ch, 1f);
+                    q.GetComponent<Renderer>().material = mat;
+                }
+            }
+
+            return parent.transform.position + Vector3.up * 0.18f;
+        }
+
+        readonly Dictionary<int, GameObject> _houseGroups = new Dictionary<int, GameObject>();
+
+        /// <summary>Dibuja (o redibuja) las casitas sobre una casilla.</summary>
+        public void SetHouses(int index, int count)
+        {
+            if (_houseGroups.TryGetValue(index, out var old) && old != null)
+                Destroy(old);
+            if (count <= 0) return;
+
+            var parent = new GameObject($"Houses_{index}");
+            parent.transform.SetParent(transform, false);
+            parent.transform.localPosition = GetTileWorldPos(index);
+            _houseGroups[index] = parent;
+
+            for (int i = 0; i < count; i++)
+            {
+                var h = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                h.name = "House";
+                h.transform.SetParent(parent.transform, false);
+                h.transform.localScale = new Vector3(0.28f, 0.3f, 0.28f);
+                h.transform.localPosition = new Vector3(-0.68f + i * 0.45f, 0.18f, 0.68f);
+
+                var mat = new Material(_baseMat);
+                mat.color = new Color(0.15f, 0.65f, 0.25f);
+                h.GetComponent<Renderer>().material = mat;
+            }
+        }
+
         public void Build()
         {
             Tiles = BoardFactory.CreateBoard();
             _baseMat = new Material(Shader.Find("Standard"));
 
+            // Tablero ilustrado (Resources/Board/board_uniform): un plano con el arte.
+            var boardTex = Resources.Load<Texture2D>("Board/board_uniform");
+            if (boardTex != null)
+            {
+                float size = TileSize * 11f;
+
+                var art = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                art.name = "BoardArt";
+                Destroy(art.GetComponent<Collider>());
+                art.transform.SetParent(transform, false);
+                art.transform.localPosition = new Vector3(0f, 0.02f, 0f);
+                art.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                art.transform.localScale = new Vector3(size, size, 1f);
+
+                var mat = new Material(Shader.Find("Unlit/Texture"));
+                mat.mainTexture = boardTex;
+                art.GetComponent<Renderer>().material = mat;
+
+                // base sólida bajo el arte
+                var basePlate = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                basePlate.name = "BoardBase";
+                basePlate.transform.SetParent(transform, false);
+                basePlate.transform.localPosition = new Vector3(0f, -0.05f, 0f);
+                basePlate.transform.localScale = new Vector3(size + 0.3f, 0.12f, size + 0.3f);
+                var baseMat = new Material(_baseMat);
+                baseMat.color = new Color(0.16f, 0.12f, 0.09f);
+                basePlate.GetComponent<Renderer>().material = baseMat;
+
+                CreateDecks(size);
+                return;
+            }
+
+            // Fallback procedural (cubos de colores) si no hay textura
             for (int i = 0; i < TileCount; i++)
                 CreateTileObject(i);
 
             CreateCenter();
         }
 
-        /// <summary>Posición en mundo del centro de la casilla.</summary>
-        public Vector3 GetTileWorldPos(int index)
+        /// <summary>
+        /// Fronteras de las 11 celdas (fracciones 0..1) según las proporciones
+        /// clásicas de Monopoly que usa el arte: esquinas 13.75%, calles 8.05%.
+        /// </summary>
+        static readonly float[] Bounds =
         {
-            int col, row;
+            0f, 0.1375f, 0.218f, 0.2985f, 0.379f, 0.4595f,
+            0.54f, 0.6205f, 0.701f, 0.7815f, 0.862f, 1f
+        };
+
+        public const float BoardSize = TileSize * 11f;
+
+        static float CellCenter(int i) => (Bounds[i] + Bounds[i + 1]) * 0.5f;
+        static float CellWidth(int i) => (Bounds[i + 1] - Bounds[i]) * BoardSize;
+
+        static void TileToGrid(int index, out int col, out int row)
+        {
             if (index <= 10) { col = 10 - index; row = 0; }
             else if (index <= 20) { col = 0; row = index - 10; }
             else if (index <= 30) { col = index - 20; row = 10; }
             else { col = 10; row = 10 - (index - 30); }
+        }
 
-            return new Vector3((col - 5) * TileSize, 0f, (row - 5) * TileSize);
+        /// <summary>Posición en mundo del centro de la casilla (alineada al arte).</summary>
+        public Vector3 GetTileWorldPos(int index)
+        {
+            TileToGrid(index, out int col, out int row);
+            return new Vector3(
+                (CellCenter(col) - 0.5f) * BoardSize,
+                0f,
+                (CellCenter(row) - 0.5f) * BoardSize);
+        }
+
+        /// <summary>Tamaño en mundo (ancho X, fondo Z) de la casilla.</summary>
+        public Vector3 GetTileWorldSize(int index)
+        {
+            TileToGrid(index, out int col, out int row);
+            return new Vector3(CellWidth(col), 0f, CellWidth(row));
         }
 
         void CreateTileObject(int index)
@@ -61,7 +204,8 @@ namespace MonopolyPlanA
             go.name = $"Tile_{index:00}_{data.Name}";
             go.transform.SetParent(transform, false);
             go.transform.localPosition = GetTileWorldPos(index);
-            go.transform.localScale = new Vector3(TileSize * 0.94f, 0.2f, TileSize * 0.94f);
+            Vector3 ts = GetTileWorldSize(index);
+            go.transform.localScale = new Vector3(ts.x * 0.94f, 0.2f, ts.z * 0.94f);
 
             var mat = new Material(_baseMat);
             mat.color = TileColor(data);

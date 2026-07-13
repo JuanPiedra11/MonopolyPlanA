@@ -4,7 +4,7 @@ namespace MonopolyPlanA
     {
         Start,        // Salida: cobra salario al pasar
         Property,     // Propiedad comprable
-        Studio,       // "Ferrocarril" tematizado: estudios de animación
+        Studio,       // "Railroad" tematizado: estudios de animación
         Utility,      // Servicios: granja de render / captura de movimiento
         Tax,          // Impuesto
         Chance,       // Suerte

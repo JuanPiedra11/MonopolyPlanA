@@ -3,10 +3,9 @@ using System.Collections.Generic;
 namespace MonopolyPlanA
 {
     /// <summary>
-    /// Crea el tablero clásico de 40 casillas, tematizado con el pipeline
-    /// de animación de videojuegos (PlanA technology).
-    /// Grupos de color: 0 Bocetos, 1 Storyboard, 2 Modelado, 3 Texturizado,
-    /// 4 Rigging, 5 Animación, 6 Iluminación, 7 Render Final.
+    /// Tablero clásico de Monopoly (40 casillas) con las rentas de las cartas de arte.
+    /// Grupos: 0 marrón, 1 celeste, 2 rosa, 3 naranja, 4 rojo, 5 amarillo, 6 verde, 7 azul oscuro.
+    /// Cada casilla comprable referencia su carta en Resources/Cards.
     /// </summary>
     public static class BoardFactory
     {
@@ -14,46 +13,46 @@ namespace MonopolyPlanA
         {
             var t = new List<TileData>(40)
             {
-                new TileData("SALIDA", TileType.Start),                                        // 0
-                new TileData("Boceto a Lápiz", TileType.Property, 60, 6, 0),                   // 1
-                new TileData("Caja de Comunidad", TileType.Community),                         // 2
-                new TileData("Boceto Digital", TileType.Property, 60, 8, 0),                   // 3
-                new TileData("Impuesto de Software", TileType.Tax, 200),                       // 4
-                new TileData("Estudio Norte", TileType.Studio, 200, 25),                       // 5
-                new TileData("Storyboard Básico", TileType.Property, 100, 10, 1),              // 6
-                new TileData("Suerte", TileType.Chance),                                       // 7
-                new TileData("Animatic 2D", TileType.Property, 100, 10, 1),                    // 8
-                new TileData("Storyboard Cinemático", TileType.Property, 120, 12, 1),          // 9
-                new TileData("CÁRCEL (Crunch)", TileType.Jail),                                // 10
-                new TileData("Modelado Low-Poly", TileType.Property, 140, 14, 2),              // 11
-                new TileData("Granja de Render", TileType.Utility, 150, 20),                   // 12
-                new TileData("Modelado High-Poly", TileType.Property, 140, 14, 2),             // 13
-                new TileData("Escultura Digital", TileType.Property, 160, 16, 2),              // 14
-                new TileData("Estudio Sur", TileType.Studio, 200, 25),                         // 15
-                new TileData("Texturas PBR", TileType.Property, 180, 18, 3),                   // 16
-                new TileData("Caja de Comunidad", TileType.Community),                         // 17
-                new TileData("UVs y Bakeo", TileType.Property, 180, 18, 3),                    // 18
-                new TileData("Materiales Estilizados", TileType.Property, 200, 20, 3),         // 19
-                new TileData("DESCANSO LIBRE", TileType.FreeParking),                          // 20
-                new TileData("Rig de Personaje", TileType.Property, 220, 22, 4),               // 21
-                new TileData("Suerte", TileType.Chance),                                       // 22
-                new TileData("Rig Facial", TileType.Property, 220, 22, 4),                     // 23
-                new TileData("Skinning Avanzado", TileType.Property, 240, 24, 4),              // 24
-                new TileData("Estudio Este", TileType.Studio, 200, 25),                        // 25
-                new TileData("Ciclo de Caminata", TileType.Property, 260, 26, 5),              // 26
-                new TileData("Animación de Combate", TileType.Property, 260, 26, 5),           // 27
-                new TileData("Captura de Movimiento", TileType.Utility, 150, 20),              // 28
-                new TileData("Cinemática In-Game", TileType.Property, 280, 28, 5),             // 29
-                new TileData("¡VE AL CRUNCH!", TileType.GoToJail),                             // 30
-                new TileData("Iluminación Global", TileType.Property, 300, 30, 6),             // 31
-                new TileData("Efectos Visuales", TileType.Property, 300, 30, 6),               // 32
-                new TileData("Caja de Comunidad", TileType.Community),                         // 33
-                new TileData("Post-Procesado", TileType.Property, 320, 32, 6),                 // 34
-                new TileData("Estudio Oeste", TileType.Studio, 200, 25),                       // 35
-                new TileData("Suerte", TileType.Chance),                                       // 36
-                new TileData("Render 4K", TileType.Property, 350, 35, 7),                      // 37
-                new TileData("Impuesto de Lujo", TileType.Tax, 100),                           // 38
-                new TileData("Máster Final", TileType.Property, 400, 50, 7)                    // 39
+                new TileData("GO", TileType.Start),                                                                    // 0
+                new TileData("Mediterranean Avenue", TileType.Property, 60, 2, 0, "card_brown_mediterranean_avenue"),      // 1
+                new TileData("Community Chest", TileType.Community),                                                     // 2
+                new TileData("Baltic Avenue", TileType.Property, 60, 4, 0, "card_brown_baltic_avenue"),                    // 3
+                new TileData("Income Tax", TileType.Tax, 200),                                                // 4
+                new TileData("Reading Railroad", TileType.Studio, 200, 25, -1, "card_railroad_reading"),                   // 5
+                new TileData("Oriental Avenue", TileType.Property, 100, 6, 1, "card_lightblue_oriental_avenue"),           // 6
+                new TileData("Chance", TileType.Chance),                                                                   // 7
+                new TileData("Vermont Avenue", TileType.Property, 100, 6, 1, "card_lightblue_vermont_avenue"),             // 8
+                new TileData("Connecticut Avenue", TileType.Property, 120, 8, 1, "card_lightblue_connecticut_avenue"),     // 9
+                new TileData("JAIL (visiting)", TileType.Jail),                                                         // 10
+                new TileData("St. Charles Place", TileType.Property, 140, 10, 2, "card_pink_st_charles_place"),            // 11
+                new TileData("Electric Company", TileType.Utility, 150, 20, -1, "card_utility_electric_company"),          // 12
+                new TileData("States Avenue", TileType.Property, 140, 10, 2, "card_pink_states_avenue"),                   // 13
+                new TileData("Virginia Avenue", TileType.Property, 160, 12, 2, "card_pink_virginia_avenue"),               // 14
+                new TileData("Pennsylvania Railroad", TileType.Studio, 200, 25, -1, "card_railroad_pennsylvania"),         // 15
+                new TileData("St. James Place", TileType.Property, 180, 14, 3, "card_orange_st_james_place"),              // 16
+                new TileData("Community Chest", TileType.Community),                                                     // 17
+                new TileData("Tennessee Avenue", TileType.Property, 180, 14, 3, "card_orange_tennessee_avenue"),           // 18
+                new TileData("New York Avenue", TileType.Property, 200, 16, 3, "card_orange_new_york_avenue"),             // 19
+                new TileData("FREE PARKING", TileType.FreeParking),                                                      // 20
+                new TileData("Kentucky Avenue", TileType.Property, 220, 18, 4, "card_red_kentucky_avenue"),                // 21
+                new TileData("Chance", TileType.Chance),                                                                   // 22
+                new TileData("Indiana Avenue", TileType.Property, 220, 18, 4, "card_red_indiana_avenue"),                  // 23
+                new TileData("Illinois Avenue", TileType.Property, 240, 20, 4, "card_red_illinois_avenue"),                // 24
+                new TileData("B&O Railroad", TileType.Studio, 200, 25, -1, "card_railroad_bo"),                            // 25
+                new TileData("Atlantic Avenue", TileType.Property, 260, 22, 5, "card_yellow_atlantic_avenue"),             // 26
+                new TileData("Ventnor Avenue", TileType.Property, 260, 22, 5, "card_yellow_ventnor_avenue"),               // 27
+                new TileData("Water Works", TileType.Utility, 150, 20, -1, "card_utility_water_works"),                    // 28
+                new TileData("Marvin Gardens", TileType.Property, 280, 24, 5, "card_yellow_marvin_gardens"),               // 29
+                new TileData("GO TO JAIL!", TileType.GoToJail),                                                       // 30
+                new TileData("Pacific Avenue", TileType.Property, 300, 26, 6, "card_green_pacific_avenue"),                // 31
+                new TileData("North Carolina Avenue", TileType.Property, 300, 26, 6, "card_green_north_carolina_avenue"),  // 32
+                new TileData("Community Chest", TileType.Community),                                                     // 33
+                new TileData("Pennsylvania Avenue", TileType.Property, 320, 28, 6, "card_green_pennsylvania_avenue"),      // 34
+                new TileData("Short Line", TileType.Studio, 200, 25, -1, "card_railroad_short_line"),                      // 35
+                new TileData("Chance", TileType.Chance),                                                                   // 36
+                new TileData("Park Place", TileType.Property, 350, 35, 7, "card_darkblue_park_place"),                     // 37
+                new TileData("Luxury Tax", TileType.Tax, 100),                                                       // 38
+                new TileData("Boardwalk", TileType.Property, 400, 50, 7, "card_darkblue_boardwalk")                        // 39
             };
             return t;
         }

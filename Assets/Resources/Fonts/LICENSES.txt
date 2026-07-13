@@ -1,0 +1,7 @@
+Fuentes incluidas — todas bajo SIL Open Font License 1.1 (uso comercial permitido):
+
+- Cinzel — Natanael Gama · https://fonts.google.com/specimen/Cinzel
+- Alegreya — Juan Pablo del Peral / Huerta Tipográfica · https://fonts.google.com/specimen/Alegreya
+- MedievalSharp — Wojciech Kalinowski · https://fonts.google.com/specimen/MedievalSharp
+
+Texto completo de la licencia: https://openfontlicense.org

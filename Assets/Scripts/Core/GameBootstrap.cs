@@ -36,19 +36,17 @@ namespace MonopolyPlanA
                 camGo.AddComponent<AudioListener>();
             }
 
-            cam.transform.position = new Vector3(0f, 26f, -17f);
-            cam.transform.LookAt(new Vector3(0f, 0f, -1.5f));
             cam.backgroundColor = new Color(0.10f, 0.12f, 0.16f);
             cam.clearFlags = CameraClearFlags.SolidColor;
+
+            // Cámara orbital: clic derecho orbita, rueda zoom, WASD desplaza, R resetea
+            if (cam.GetComponent<CameraOrbitController>() == null)
+                cam.gameObject.AddComponent<CameraOrbitController>();
         }
 
         void SetupLight()
         {
-#if UNITY_2023_1_OR_NEWER
-            if (FindFirstObjectByType<Light>() != null) return;
-#else
-            if (FindObjectOfType<Light>() != null) return;
-#endif
+            if (FindAnyObjectByType<Light>() != null) return;
 
             var lightGo = new GameObject("Directional Light");
             var light = lightGo.AddComponent<Light>();

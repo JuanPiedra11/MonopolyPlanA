@@ -11,11 +11,21 @@ Prototipo de juego de mesa estilo Monopoly hecho en **Unity 6.5 (6000.5.3f1)**, 
 
 ## Cómo jugar el prototipo
 
-1. Crea una escena nueva (File → New Scene) y guárdala en `Assets/Scenes/Main.unity`.
-2. Crea un GameObject vacío y añádele el componente **GameBootstrap**.
-3. Pulsa **Play**. Elige 2-4 jugadores (hot-seat) y a jugar.
+1. La primera vez: menú **PlanA → Crear escena Menu + configurar Build Settings** (crea `Menu.unity` y registra las escenas).
+2. Abre `Assets/Scenes/Menu.unity` y pulsa **Play**.
+3. Flujo: **Título → Lobby** (elige cuántos jugadores 2-4, cuáles son humanos o bots, nombre y color de cada uno) → **¡Jugar!**
+
+Los bots juegan solos: lanzan los dados y deciden compras automáticamente. La escena `Main.unity` también puede ejecutarse directamente (muestra el selector rápido clásico).
 
 Todo (tablero, cámara, luz, fichas, UI) se genera por código: no hay que configurar nada más en la escena.
+
+**Cámara (3 modos, panel arriba a la derecha):**
+
+- **Libre**: clic derecho = orbitar · rueda = zoom · WASD/clic medio = desplazar
+- **Cenital**: vista superior; rueda = zoom · WASD/clic medio = desplazar
+- **Seguir**: tercera persona sobre una ficha (la del turno con `F`, o fija un jugador desde el panel) · clic derecho = orbitar · rueda = zoom
+
+Atajos: `V` alterna Libre/Cenital · `F` sigue al jugador del turno · `R` resetea la vista del modo actual.
 
 ## Reglas del prototipo
 
