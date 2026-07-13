@@ -230,8 +230,6 @@ namespace MonopolyPlanA
                 Vector3 to = TileCenterPos(Current.Position);
                 if (character != null) character.SetMoveDirection(to - from);
 
-                AudioManager.Play("sfx_token_step", 0.55f);
-
                 // traslación suave hasta la casilla (sin teletransporte, ritmo de caminata)
                 const float stepDur = 0.4f;
                 float t0 = Time.time;
@@ -1092,8 +1090,6 @@ namespace MonopolyPlanA
                 if (character != null)
                     character.SetMoveDirection(to - from);
 
-                AudioManager.Play("sfx_token_step", 0.55f);
-
                 // traslación suave hasta la casilla (sin teletransporte, ritmo de caminata)
                 const float stepDur = 0.4f;
                 float t0 = Time.time;
@@ -1555,7 +1551,23 @@ namespace MonopolyPlanA
             renderer.alignment = ParticleSystemRenderSpace.Local;
 
             ps.Play();
+            // el emisor SIGUE a la ficha por su XZ (al pasar GO las monedas caen a lo
+            // largo de su trayectoria, no se quedan en la casilla); simulación en World
+            // así las ya emitidas quedan en el tablero formando la estela.
+            StartCoroutine(FollowEmitterXZ(go.transform, target, topY, rainDur + 1.5f));
             Destroy(go, rainDur + 1.5f);
+        }
+
+        /// <summary>Mantiene un emisor de partículas encima de una ficha en movimiento
+        /// (solo copia XZ; la Y queda fija para no arrastrar la lluvia verticalmente).</summary>
+        IEnumerator FollowEmitterXZ(Transform fx, Transform target, float fixedY, float dur)
+        {
+            float t0 = Time.time;
+            while (fx != null && target != null && Time.time - t0 < dur)
+            {
+                fx.position = new Vector3(target.position.x, fixedY, target.position.z);
+                yield return null;
+            }
         }
 
         IEnumerator CoinRainRoutine(Transform target)

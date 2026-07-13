@@ -640,15 +640,33 @@ namespace MonopolyPlanA
             {
                 // el modelo NO es billboard: solo la placa, el texto y el avatar miran a cámara
                 CachePlate();
+                bool topView3D = CameraOrbitController.Instance != null
+                              && CameraOrbitController.Instance.Mode == CameraMode.Top;
                 if (_plate != null) _plate.rotation = rot;
-                if (_plate != null && _plateLabel != null)
+                if (_avatarShown && _quad != null) _quad.rotation = rot;
+
+                if (topView3D && _avatarShown && _quad != null && _plate != null)
+                {
+                    // En vista cenital un offset en Y es PROFUNDIDAD (la placa caería
+                    // encima del avatar). Separamos la placa en el eje "arriba" de la
+                    // PANTALLA (cam.up) y la acercamos un poco a la cámara.
+                    float ph = _plate.localScale.y;
+                    float sep = 1.7f * 0.5f + 0.12f + ph * 0.5f; // medio avatar + margen + media placa
+                    _plate.position = _quad.position + cam.transform.up * sep
+                                                     - cam.transform.forward * 0.06f;
+                    if (_plateLabel != null)
+                    {
+                        _plateLabel.rotation = rot;
+                        _plateLabel.position = _plate.position + rot * new Vector3(0f, -ph * 0.045f, -0.05f);
+                    }
+                }
+                else if (_plate != null && _plateLabel != null)
                 {
                     _plateLabel.rotation = rot;
                     // anclado a la placa y SIEMPRE delante de ella hacia la cámara
                     float dy = -_plate.localScale.y * 0.045f; // misma caída que en 2D
                     _plateLabel.position = _plate.position + rot * new Vector3(0f, dy, -0.05f);
                 }
-                if (_avatarShown && _quad != null) _quad.rotation = rot;
 
                 // caminata in-place: durante walk se congela la traslación completa
                 // del root y del pelvis (en idle/victory/defeat quedan originales)
