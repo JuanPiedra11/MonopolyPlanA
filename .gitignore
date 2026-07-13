@@ -47,3 +47,6 @@ crashlytics-build.properties
 
 # ComfyUI outputs sin curar (solo se versiona arte final en Assets/Art)
 art/comfyui/output/
+
+# Memoria interna de Claude (no va al repo público)
+CLAUDE.md
