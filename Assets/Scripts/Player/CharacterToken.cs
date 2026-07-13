@@ -27,7 +27,7 @@ namespace MonopolyPlanA
         /// </summary>
         static readonly Dictionary<string, float> CanvasWorldHeight = new Dictionary<string, float>
         {
-            { "rey", 2.39f }, { "mago", 2.45f }, { "arquera", 2.39f }, { "enano", 1.87f }
+            { "rey", 2.39f }, { "mago", 2.36f }, { "arquera", 2.39f }, { "enano", 1.87f }
         };
 
         public float WorldHeight =>
@@ -36,7 +36,7 @@ namespace MonopolyPlanA
         /// <summary>Fracción del lienzo que ocupa el cuerpo (medida en el idle).</summary>
         static readonly Dictionary<string, float> BodyFraction = new Dictionary<string, float>
         {
-            { "rey", 0.815f }, { "mago", 0.876f }, { "arquera", 0.816f }, { "enano", 0.801f }
+            { "rey", 0.815f }, { "mago", 0.830f }, { "arquera", 0.816f }, { "enano", 0.801f }
         };
 
         /// <summary>Y local de la coronilla del personaje (los pies están en -0.5).</summary>
@@ -90,7 +90,7 @@ namespace MonopolyPlanA
         /// </summary>
         static readonly Dictionary<string, float> SideArtFacing = new Dictionary<string, float>
         {
-            { "rey", 1f }, { "mago", -1f }, { "arquera", 1f }, { "enano", -1f }
+            { "rey", -1f }, { "mago", -1f }, { "arquera", 1f }, { "enano", 1f }
         };
 
         float SideCorrection =>

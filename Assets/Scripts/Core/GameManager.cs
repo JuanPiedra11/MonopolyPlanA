@@ -1129,6 +1129,7 @@ namespace MonopolyPlanA
                     if (tile.OwnerIndex != _currentIndex)
                     {
                         int rent = CalcRent(tile);
+                        AudioManager.Play("sfx_lucky"); // alguien cayó en propiedad de otro jugador
                         Pay(Current, _players[tile.OwnerIndex], rent);
                         _log = $"{Current.Name} pays ${rent} rent to {_players[tile.OwnerIndex].Name} for {tile.Name}.";
                     }
@@ -3315,11 +3316,11 @@ namespace MonopolyPlanA
         {
             GUI.enabled = true;
 
-            // fanfarria + multitud celebrando (una sola vez al entrar)
+            // tambores de resultados + multitud celebrando (una sola vez al entrar)
             if (!_victorySfxPlayed)
             {
                 _victorySfxPlayed = true;
-                AudioManager.Play("sfx_victory");
+                AudioManager.Play("drums_results");
                 AudioManager.Play("sfx_crowd", 0.8f);
             }
 
