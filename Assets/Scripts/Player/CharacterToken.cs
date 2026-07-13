@@ -27,7 +27,7 @@ namespace MonopolyPlanA
         /// </summary>
         static readonly Dictionary<string, float> CanvasWorldHeight = new Dictionary<string, float>
         {
-            { "rey", 2.39f }, { "mago", 2.21f }, { "arquera", 2.39f }, { "enano", 1.87f }
+            { "rey", 2.39f }, { "mago", 2.45f }, { "arquera", 2.39f }, { "enano", 1.87f }
         };
 
         public float WorldHeight =>
@@ -36,7 +36,7 @@ namespace MonopolyPlanA
         /// <summary>Fracción del lienzo que ocupa el cuerpo (medida en el idle).</summary>
         static readonly Dictionary<string, float> BodyFraction = new Dictionary<string, float>
         {
-            { "rey", 0.815f }, { "mago", 0.893f }, { "arquera", 0.816f }, { "enano", 0.801f }
+            { "rey", 0.815f }, { "mago", 0.876f }, { "arquera", 0.816f }, { "enano", 0.801f }
         };
 
         /// <summary>Y local de la coronilla del personaje (los pies están en -0.5).</summary>
@@ -44,6 +44,18 @@ namespace MonopolyPlanA
             -0.5f + WorldHeight * (BodyFraction.TryGetValue(_charName, out var f) ? f : 0.82f);
 
         /// <summary>Y local del borde superior de la placa del nombre (para apoyar la corona del líder).</summary>
+        /// <summary>Posición MUNDIAL del centro de la placa (ya corregida para vista
+        /// Top en 3D). La usa la corona del líder para apilarse sobre la etiqueta.</summary>
+        public Vector3 PlateWorldCenter
+        {
+            get { CachePlate(); return _plate != null ? _plate.position : transform.position + Vector3.up * WorldHeight; }
+        }
+        /// <summary>Alto MUNDIAL de la placa del nombre.</summary>
+        public float PlateHeightWorld
+        {
+            get { CachePlate(); return _plate != null ? _plate.localScale.y : 0.44f; }
+        }
+
         public float PlateTopY
         {
             get

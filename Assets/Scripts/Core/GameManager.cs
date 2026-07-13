@@ -1909,12 +1909,29 @@ namespace MonopolyPlanA
             float aspect = (float)_crownFrames[0].width / _crownFrames[0].height;
             const float crownH = 0.62f; // corona bien visible
             float bob = Mathf.Sin(Time.time * 1.4f) * 0.05f; // flotación lenta y suave
-            // apoyada justo sobre la placa del nombre; con popup de dinero, más arriba
             float plateTop = ct != null ? ct.PlateTopY : 2.2f;
             float extra = 0f;
             if (_popupCounts.TryGetValue(leader.Token.transform, out int pcount) && pcount > 0)
                 extra = 0.72f; // deja sitio al texto de ganancia/pérdida
-            _crownFx.transform.localPosition = new Vector3(0f, plateTop + extra + 0.05f + crownH / 2f + bob, 0f);
+
+            var camC = Camera.main;
+            bool topView = CameraOrbitController.Instance != null
+                        && CameraOrbitController.Instance.Mode == CameraMode.Top;
+            if (topView && camC != null && ct != null)
+            {
+                // En cenital un offset en Y es PROFUNDIDAD (la corona caería sobre el
+                // avatar). Se apila sobre la placa por el eje "arriba" de la pantalla,
+                // encima de la etiqueta del nombre.
+                Vector3 up = camC.transform.up;
+                _crownFx.transform.position = ct.PlateWorldCenter
+                    + up * (ct.PlateHeightWorld * 0.5f + crownH * 0.5f + 0.06f + extra + bob)
+                    - camC.transform.forward * 0.05f;
+            }
+            else
+            {
+                // apoyada justo sobre la placa del nombre; con popup de dinero, más arriba
+                _crownFx.transform.localPosition = new Vector3(0f, plateTop + extra + 0.05f + crownH / 2f + bob, 0f);
+            }
             _crownFx.transform.localScale = new Vector3(crownH * aspect, crownH, 1f);
 
             var tex = _crownFrames[(int)(Time.time / CrownFrameTime) % 8];
@@ -1922,7 +1939,6 @@ namespace MonopolyPlanA
                 _crownMat.mainTexture = tex;
 
             // de cara a la cámara aunque el token sea un modelo 3D (sin billboard)
-            var camC = Camera.main;
             if (camC != null)
                 _crownFx.transform.rotation =
                     Quaternion.LookRotation(camC.transform.forward, camC.transform.up);
